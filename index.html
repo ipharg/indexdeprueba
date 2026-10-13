@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Registro de Celulares Robados en Formosa</title>
+<style>
+  :root{
+    --bg:#0a1220; --card:#101b30; --row:#0d1627; --line:#1d2c4a;
+    --blue:#2f7df6; --blue2:#0b5fe0; --text:#eaf1ff; --muted:#8fa3c7;
+    --red:#ff4d5e; --green:#27c97a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;
+    background-image:radial-gradient(circle at 20% 0%,#12315e55,transparent 50%),radial-gradient(circle at 90% 100%,#0b5fe033,transparent 45%)}
+  header{text-align:center;padding:28px 16px 22px;border-bottom:1px solid var(--line);background:#0b1526}
+  header h1{font-size:clamp(1.5rem,4.5vw,2.3rem);font-weight:900;line-height:1.15}
+  header h1 span{color:var(--blue)}
+  header p{max-width:720px;margin:10px auto 0;color:var(--muted);font-size:.98rem;line-height:1.5}
+  main{max-width:1100px;margin:0 auto;padding:24px 16px 20px;display:grid;grid-template-columns:1.25fr 1fr;gap:24px;align-items:start}
+  @media(max-width:860px){main{grid-template-columns:1fr}.checker{order:-1}}
+  h2{font-size:1.4rem;margin-bottom:6px}
+  .sub{color:var(--muted);font-size:.95rem;margin-bottom:18px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
+  .checker{position:sticky;top:16px}
+  label{display:block;font-weight:700;margin-bottom:8px}
+  .field{display:flex;gap:10px}
+  input[type=text]{flex:1;min-width:0;background:#0a1324;border:1.5px solid var(--line);color:var(--text);border-radius:12px;padding:14px;font-size:1.05rem;letter-spacing:1px;outline:none}
+  input[type=text]:focus{border-color:var(--blue)}
+  button,.btn{background:linear-gradient(180deg,var(--blue),var(--blue2));color:#fff;border:0;border-radius:12px;padding:0 20px;font-weight:800;font-size:1rem;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+  button:active,.btn:active{transform:scale(.97)}
+  .btn-scan{width:100%;margin-top:12px;padding:14px;background:transparent;border:1.5px solid var(--blue);color:var(--blue);gap:8px}
+  .btn-enacom{width:100%;margin-top:12px;padding:14px;gap:8px}
+  .calls{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+  .btn-call,.btn-wa{flex:1 1 180px;padding:15px 12px;font-size:1rem;gap:8px;text-align:center;line-height:1.2}
+  .btn-call{background:linear-gradient(180deg,#ff6474,var(--red))}
+  .btn-wa{background:linear-gradient(180deg,#34d98a,#1fae66)}
+  .hint{color:var(--muted);font-size:.85rem;margin-top:10px;line-height:1.4}
+  .result{display:none;margin-top:18px;padding:16px;border-radius:12px;border:1.5px solid;font-weight:600;line-height:1.4}
+  .result.show{display:block}
+  .result .t{display:block;font-size:1.1rem;font-weight:800;margin-bottom:4px}
+  .result.bad{background:#ff4d5e18;border-color:var(--red);color:#ffb3bb}
+  .result.bad .t{color:var(--red)}
+  .result.ok{background:#27c97a15;border-color:var(--green);color:#a9efcb}
+  .result.ok .t{color:var(--green)}
+  .result.warn{background:#ffb02015;border-color:#ffb020;color:#ffd78a}
+  .result.warn .t{color:#ffb020}
+
+  /* Escáner */
+  .scanbox{display:none;margin-top:14px}
+  .scanbox.show{display:block}
+  #reader{width:100%;border-radius:12px;overflow:hidden;background:#000;min-height:120px}
+  .scanmsg{color:var(--muted);font-size:.85rem;margin-top:8px;text-align:center}
+  .btn-close{width:100%;margin-top:10px;padding:12px;background:#1d2c4a;font-size:.95rem}
+
+  .head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+  .tag{font-size:.75rem;letter-spacing:2px;font-weight:800;color:#ffb020}
+  .count{font-size:.85rem;color:var(--muted)}
+  .list{display:flex;flex-direction:column;gap:8px}
+  .item{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--row);border:1px solid transparent;border-radius:10px;padding:12px 14px;transition:.2s}
+  .item .m{font-weight:700;font-size:.95rem}
+  .item .m span{font-weight:400;color:var(--muted);font-size:.82rem}
+  .item .i{font-weight:800;letter-spacing:.5px;font-variant-numeric:tabular-nums;font-size:.95rem;white-space:nowrap}
+  .item.hit{border-color:var(--red);background:#ff4d5e1f}
+  @media(max-width:520px){.item{flex-direction:column;align-items:flex-start;gap:4px}}
+  .legal{color:var(--muted);font-size:.8rem;text-align:center;margin:10px auto 30px;max-width:700px;padding:0 16px;line-height:1.5}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Registro de Celulares Robados <span>en Formosa</span></h1>
+  <p>En este registro se encuentran todos los datos de los celulares que fueron reportados como robados.</p>
+</header>
+
+<main>
+  <section>
+    <h2>Equipos reportados</h2>
+    <p class="sub">Si ves alguno de estos IMEI, avisá al 911.</p>
+    <div class="panel">
+      <div class="head">
+        <span class="tag">LISTA DE EQUIPOS ROBADOS</span>
+        <span class="count" id="count"></span>
+      </div>
+      <div class="list" id="list"></div>
+    </div>
+  </section>
+
+  <aside class="checker">
+    <div class="panel">
+      <h2>Verificar IMEI</h2>
+      <p class="sub">Ingresá el IMEI del celular y comprobá si figura en la lista.</p>
+      <label for="imei">Número de IMEI</label>
+      <div class="field">
+        <input type="text" id="imei" inputmode="numeric" maxlength="20" placeholder="Ej: 35XXXXXXXXXXXXX" autocomplete="off">
+        <button id="btn" type="button">Verificar</button>
+      </div>
+      <p class="hint">El IMEI está en la etiqueta de la caja y en <b>Configuración &gt; General &gt; Información</b>. También podés marcar <b>*#06#</b> en la app Teléfono.</p>
+
+      <div class="result" id="result" role="status" aria-live="polite"></div>
+      <div id="callArea"></div>
+
+      <button id="btnScan" class="btn-scan" type="button">📷 Escanear código de barras</button>
+      <div class="scanbox" id="scanbox">
+        <div id="reader"></div>
+        <p class="scanmsg" id="scanmsg">Apuntá la cámara al código de barras del IMEI.</p>
+        <button id="btnStop" class="btn-close" type="button">Cerrar cámara</button>
+      </div>
+
+      <a class="btn btn-enacom" href="https://www.imei.enacom.gob.ar" target="_blank" rel="noopener">🔎 Consultar por Enacom</a>
+    </div>
+  </aside>
+</main>
+
+<p class="legal">Lista informativa. Ante cualquier duda, verificá también en los registros oficiales antes de comprar un equipo usado.</p>
+
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script>
+  /* =====================================================================
+     LISTA DE CELULARES ROBADOS
+     Cada celular es UNA línea con estos datos:
+       m = modelo                      (ej: "iPhone 15 Pro")
+       d = capacidad y color           (ej: "256 GB · Negro")
+       i = IMEI, 15 dígitos            (sin espacios ni guiones)
+       w = WhatsApp de quien reportó   (ej: "3704774981", sin 0 ni 15 ni +54)
+
+     Cada celular puede tener SU PROPIO número de WhatsApp en "w".
+     Si dejás w:"" (vacío), no aparece el botón verde para ese celular.
+     ===================================================================== */
+  const ROBADOS = [
+
+    // ---------- CELULARES YA CARGADOS (reportados al 3704774981) ----------
+    {m:"iPhone 11",        d:"128 GB · Negro",                i:"359466822865176", w:"3704774981"},
+    {m:"iPhone 12 Pro Max",d:"128 GB · Plata",                i:"353730399797997", w:"3704774981"},
+    {m:"iPhone 13",        d:"128 GB · Blanco estrella",      i:"354066780793405", w:"3704774981"},
+    {m:"iPhone 13",        d:"128 GB · Blanco estrella",      i:"357514597679793", w:"3704774981"},
+    {m:"iPhone 13 Pro",    d:"256 GB · Grafito",              i:"359052379699356", w:"3704774981"},
+    {m:"iPhone 14",        d:"128 GB · Blanco estrella",      i:"350431275917634", w:"3704774981"},
+    {m:"iPhone 14 Pro Max",d:"128 GB · Plata",                i:"353427814401590", w:"3704774981"},
+    {m:"iPhone 14 Pro Max",d:"128 GB · Morado profundo",      i:"355822265602381", w:"3704774981"},
+    {m:"iPhone 15",        d:"128 GB · Azul",                 i:"350795426916335", w:"3704774981"},
+    {m:"iPhone 15",        d:"128 GB · Negro",                i:"351840763573494", w:"3704774981"},
+    {m:"iPhone 15",        d:"128 GB · Rosa",                 i:"358614724146978", w:"3704774981"},
+    {m:"iPhone 15 Pro",    d:"128 GB · Titanio azul",         i:"351697432168662", w:"3704774981"},
+    {m:"iPhone 16 Pro",    d:"128 GB · Titanio del desierto", i:"356727497453488", w:"3704774981"},
+    {m:"iPhone 16 Pro",    d:"128 GB · Titanio natural",      i:"357324795488652", w:"3704774981"},
+    {m:"iPhone 16 Pro Max",d:"256 GB · Titanio natural",      i:"352864971500981", w:"3704774981"},
+    {m:"iPhone 17",        d:"256 GB · Negro",                i:"352579436682642", w:"3704774981"},
+    {m:"iPhone 17 Pro",    d:"256 GB · Plata",                i:"357165908105042", w:"3704774981"},
+    {m:"iPhone 17 Pro Max",d:"256 GB · Plata",                i:"351586498796229", w:"3704774981"},
+    {m:"iPhone 17 Pro Max",d:"256 GB · Azul",                 i:"355101476692501", w:"3704774981"},
+    {m:"iPhone 18 Pro",    d:"256 GB · Negro",                i:"355727395219453", w:"3704774981"},
+    {m:"iPhone 18 Pro Max",d:"256 GB · Glaciar",              i:"353610356593276", w:"3704774981"},
+
+    // =====================================================================
+    //  ✏️  AGREGAR CELULARES NUEVOS ACÁ (debajo de esta línea)
+    //  1) Copiá la línea de ejemplo de abajo (sin las dos barras //)
+    //  2) Pegala debajo de este recuadro
+    //  3) Cambiá modelo, capacidad/color, IMEI y el WhatsApp de quien reportó
+    //  Ejemplo:
+    //  {m:"iPhone 14 Pro", d:"256 GB · Negro espacial", i:"350000000000000", w:"3704000000"},
+    // =====================================================================
+
+
+    // =====================================================================
+    //  ⬆️  NO ESCRIBAS DESPUÉS DE ESTA LÍNEA
+    // =====================================================================
+  ];
+
+  const $list = document.getElementById('list');
+  const $count = document.getElementById('count');
+  const $input = document.getElementById('imei');
+  const $result = document.getElementById('result');
+  const $call = document.getElementById('callArea');
+
+  $count.textContent = ROBADOS.length + " equipos";
+
+  function renderList(highlight){
+    $list.innerHTML = ROBADOS.map(r =>
+      `<div class="item${r.i===highlight?' hit':''}" data-imei="${r.i}">
+         <div class="m">${r.m} <span>· ${r.d}</span></div>
+         <div class="i">${r.i}</div>
+       </div>`).join('');
+  }
+  renderList();
+
+  // Arma el número para WhatsApp (Argentina): deja solo dígitos y agrega 549 si falta
+  function waNumber(n){
+    let d = String(n || '').replace(/\D/g,'');
+    if(!d) return '';
+    if(d.startsWith('00')) d = d.slice(2);
+    if(d.startsWith('54')) return d.startsWith('549') ? d : '549' + d.slice(2);
+    if(d.startsWith('0')) d = d.slice(1);
+    return '549' + d;
+  }
+
+  function show(type, title, text){
+    $result.className = "result show " + type;
+    $result.innerHTML = `<span class="t">${title}</span>${text}`;
+  }
+  function clearResult(){
+    $result.className = 'result';
+    $call.innerHTML = '';
+  }
+
+  function verificar(){
+    const v = $input.value.replace(/\D/g,'');
+    renderList();
+    $call.innerHTML = '';
+    if(v.length === 0){
+      show('warn','Ingresá un IMEI','Escribí el número de 15 dígitos para poder verificarlo.');
+      return;
+    }
+    if(v.length !== 15){
+      show('warn','IMEI incompleto','El IMEI tiene 15 dígitos y escribiste ' + v.length + '. Revisá el número.');
+      return;
+    }
+    const hit = ROBADOS.find(r => r.i === v);
+    if(hit){
+      show('bad','⚠ Este IMEI SÍ se encuentra en la lista de robados',
+        `${hit.m} · ${hit.d}. No lo compres.`);
+      let html = '<div class="calls"><a class="btn btn-call" href="tel:911">📞 Comunicarse al 911</a>';
+      const wa = waNumber(hit.w);
+      if(wa){
+        const msg = encodeURIComponent(`Hola, consulté el IMEI ${hit.i} (${hit.m} · ${hit.d}) en el Registro de Celulares Robados en Formosa y figura como robado. Me comunico para dar información.`);
+        html += `<a class="btn btn-wa" href="https://wa.me/${wa}?text=${msg}" target="_blank" rel="noopener">💬 Comunicarse con quien reportó el celular</a>`;
+      }
+      html += '</div>';
+      $call.innerHTML = html;
+      renderList(hit.i);
+      const el = $list.querySelector('.hit');
+      if(el) el.scrollIntoView({behavior:'smooth',block:'center'});
+    } else {
+      show('ok','✓ Este IMEI NO se encuentra en la lista de robados',
+        'No figura en la lista.');
+    }
+  }
+
+  document.getElementById('btn').addEventListener('click', verificar);
+  $input.addEventListener('keydown', e => { if(e.key==='Enter') verificar(); });
+  $input.addEventListener('input', () => {
+    $input.value = $input.value.replace(/[^\d\s-]/g,'');
+    clearResult();
+    renderList();
+  });
+
+  // ===== ESCÁNER DE CÓDIGO DE BARRAS =====
+  const $scanbox = document.getElementById('scanbox');
+  const $scanmsg = document.getElementById('scanmsg');
+  let scanner = null;
+
+  async function stopScan(){
+    try{
+      if(scanner){
+        if(scanner.isScanning) await scanner.stop();
+        scanner.clear();
+      }
+    }catch(e){}
+    scanner = null;
+    $scanbox.classList.remove('show');
+  }
+
+  async function startScan(){
+    if(typeof Html5Qrcode === 'undefined'){
+      show('warn','Escáner no disponible','No se pudo cargar el escáner. Revisá tu conexión o escribí el IMEI a mano.');
+      return;
+    }
+    $scanbox.classList.add('show');
+    $scanmsg.textContent = 'Apuntá la cámara al código de barras del IMEI.';
+    scanner = new Html5Qrcode('reader', {
+      formatsToSupport: [
+        Html5QrcodeSupportedFormats.CODE_128,
+        Html5QrcodeSupportedFormats.CODE_39,
+        Html5QrcodeSupportedFormats.EAN_13,
+        Html5QrcodeSupportedFormats.ITF,
+        Html5QrcodeSupportedFormats.QR_CODE
+      ]
+    });
+    try{
+      await scanner.start(
+        { facingMode: 'environment' },
+        { fps: 10, qrbox: (w,h) => ({ width: Math.floor(w*0.9), height: Math.floor(Math.min(h,w)*0.4) }) },
+        (text) => {
+          const m = String(text).match(/\d{15}/);
+          if(m){
+            $input.value = m[0];
+            stopScan().then(verificar);
+          } else {
+            $scanmsg.textContent = 'Leí un código, pero no es un IMEI de 15 dígitos. Probá con otro código de la etiqueta.';
+          }
+        },
+        () => {}
+      );
+    }catch(err){
+      $scanbox.classList.remove('show');
+      scanner = null;
+      show('warn','No se pudo abrir la cámara','Permití el acceso a la cámara en tu navegador (la página debe abrirse con https) o escribí el IMEI a mano.');
+    }
+  }
+
+  document.getElementById('btnScan').addEventListener('click', startScan);
+  document.getElementById('btnStop').addEventListener('click', stopScan);
+</script>
+</body>
+</html>
